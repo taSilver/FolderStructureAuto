@@ -15,22 +15,7 @@ class MyHandler(FileSystemEventHandler):
             ext = filename.rpartition('.')[-1].lower()
             ext = '.'+ext
             src = folder_to_track + "/" + filename
-            if ext in ['.jpg', '.jpeg', '.png', '.gif', 'webp', '.tiff', '.psd', '.raw', '.bmp', '.heif', '.indd']:
-                new_destination = paths['images'] + "/" + filename
-            elif ext in [".webm", ".mpg", ".mp2", ".mpeg", ".mpe", ".mpv", ".ogg", ".mp4", ".m4p", ".m4v", ".avi", ".wmv", ".mov", ".qt", ".flv"]:
-                new_destination = paths['videos'] + "/" + filename
-            elif ext in [".zip", ".rar", ".7z", ".gz", '.7zip']:
-                new_destination = paths['zip'] + "/" + filename
-            elif ext in [".exe", ".app", ".vb", ".scr", '.bat']:
-                new_destination = paths['exe'] + "/" + filename
-            elif ext in [".pdf", ".txt", ".doc", ".docx", '.xls', '.xlsx', '.ppt', '.pptx']:
-                new_destination = paths['documents'] + "/" + filename
-            elif ext in [".html"]:
-                new_destination = paths['html'] + "/" + filename
-            elif ext in [".aac", ".wma", ".wav", '.mp3', '.flac', '.m4a']:
-                new_destination = paths['music'] + "/" + filename
-            else:
-                new_destination = paths['misc'] + "/" + filename
+            new_destination = paths[(extension_type[ext] if ext in extension_type else "misc")] + "/" + filename
             os.rename(src, new_destination)
 
 
@@ -49,6 +34,16 @@ paths = {
     "music": os.path.join(folder_to_track, "music"),
     "misc": os.path.join(folder_to_track, "misc")
 }
+extensions_folders = {
+    "images": ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.tiff', '.psd', '.raw', '.bmp', '.heif', '.indd'],
+    "videos": [".webm", ".mpg", ".mp2", ".mpeg", ".mpe", ".mpv", ".ogg", ".mp4", ".m4p", ".m4v", ".avi", ".wmv", ".mov", ".qt", ".flv"],
+    "zip": [".zip", ".rar", ".7z", ".gz", '.7zip'],
+    "exe": [".exe", ".app", ".vb", ".scr", '.bat', ".jar"],
+    "documents": [".pdf", ".txt", ".doc", ".docx", '.xls', '.xlsx', '.ppt', '.pptx'],
+    "html": [".html", ".css"],
+    "music": [".aac", ".wma", ".wav", '.mp3', '.flac', '.m4a']
+}
+extension_type = dict((ext, folder) for folder, extensions in extensions_folders.items() for ext in extensions)
 for newpath in paths.values():
     if not os.path.isdir(newpath):
         os.makedirs(newpath)
